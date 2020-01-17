@@ -1,0 +1,34 @@
+# Project 2 - Ames Housing Data and Kaggle Challenge
+
+
+
+## Objective
+
+Given a dataset of house features, adequately predict the price of a house based on those features.
+
+## The Dataset
+
+We are given both a training and a testing dataset. The variables are the same in both .csv's with the except of the testing data not including a column for the actual house prices. All of the data is a combination of strings, numericals, categoricals, and ordinals, and there are thousands of null values.
+
+## EDA
+
+After importing the data, I did some basic munging operations which included lower-casing the column names and replacing spaces with underscores. For all of the columns with numerical variables I replaced their null values with the column's mean, which only negligibly affected its mean and correlation to the sale price. I looked for variables with at least a 50% correlation to the sale price, and I came up with about a dozen or so variables. I later decided to drop a couple of them whose plots didn't appear to be correlated well, even though mathematically they produced a value of "r" slightly higher than 0.5. For some of the variables, including the garage's square footage, the basement's square footage, and the year the house built, I dropped a few rows with outliers so that my soon-to-be linear regression would correlate more accurately. The year_built column had a error and said a house was built in the year 2207, so I just dropped that row too.
+
+Plotting a histogram of the sale prices showed me the data was right-skewed, so I knew at that point I would have to apply a log transformation later on to try normalizing the data.
+
+I also used a dictionary to change the categorical columns to integers, with a unique value corresponding to the quality in a given column (poor, fair, good, excellent, etc.) Doing this provided a couple more variables that correlated very highly with the sale price (external quality and kitchen quality) and would lead to higher cross-validation and r2 scores and a lower RMSE.
+
+There are various plots throughout my project's notebook in the EDA section that I used to arrive at some of the conclusions stated in the last two paragraphs.
+
+## Modeling and Scoring
+
+Upon completing my EDA, I had 13 variables that I had decided to use in my models and regressions. I ran Sklearn's train_test_split, instantantiated a linear regression, and generated predictions. The mean of my cross-validation score was 0.85, and my Root Mean Squared Error was 31,451.85.
+
+After this first round I went back and applied a log transformation to my y_train data (house prices). The resulting distribution was clearly much more normalized than that of the original sale prices. Then I used Sklearn's StandardScaler to transform the X_train and X_holdout data to prepare it for a Ridge regression. After fitting a Ridge regression and generating predictions from it, my new cross-validation score was still 0.85. However, the new RMSE went down significantly to 27,118.68. 
+
+That's.......about.......it..... I transformed the final predictions, which were still in a log-transformed form, back to normal using np.expm1 and then exported a .csv for Kaggle.
+
+---
+
+## Conclusion
+Recommendations: Some of the more intuitive reasons for the houses' values, like the square footage or the year it was built, can't be changed. However, what can be modified are attributes like the external quality and the overall quality of the house. For a homeowner or an investor, renovating an older home would up those categories and increase the expected sale price of the house.
